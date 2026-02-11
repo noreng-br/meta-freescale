@@ -16,16 +16,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=9fa7f895f96bde2d47fd5b7d95b6ba4d \
 PROVIDES = "jailhouse"
 RPROVIDES:${PN} += "jailhouse"
 
-SRCBRANCH = "lf-6.12.20_2.0.0"
-SRCREV = "399d65450e9a377b4aaff4b0627619174e1c8c46"
+SRCBRANCH = "lf-6.12.49_2.2.0"
+SRCREV = "d2e563cbfdbf6cdfa6be60bb626b566bddb1f101"
 
 PV = "2023.03+git${SRCPV}"
 
 IMX_JAILHOUSE_SRC ?= "git://github.com/nxp-imx/imx-jailhouse.git;protocol=https"
 SRC_URI = "${IMX_JAILHOUSE_SRC};branch=${SRCBRANCH} \
            file://arm-arm64-Makefile-Remove-march-option-from-Makefile.patch \
-           file://0001-YOCIMX-9281-1-Fix-gcc15-errors.patch \
-           file://0002-YOCIMX-9281-2-hypervisor-arm64-fix-strh-usage.patch \
           "
 
 DEPENDS = " \
@@ -91,7 +89,7 @@ do_install:append() {
 
 PACKAGE_BEFORE_PN = "pyjailhouse"
 
-FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
+FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR} ${datadir}/bash-completion"
 # Remove libdir/* appended by setuptools3-base.bbclass for module split to work correctly
 FILES:${PN}:remove = "${libdir}/*"
 FILES:pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
