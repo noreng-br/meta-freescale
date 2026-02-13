@@ -2,11 +2,15 @@
 
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://COPYING;md5=a93b654673e1bc8398ed1f30e0813359"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc649096ad3928ec06a8713b8d787eac"
+
 DEPENDS = "boost libdrm virtual/libg2d libtinyxml2 jsoncpp patchelf-native"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/../..:"
 
 SRC_URI = " \
     ${FSL_MIRROR}/${BP}-${IMX_SRCREV_ABBREV}.bin;fsl-eula=true \
+    file://EULA \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '${ISP_SYSTEMD_PATCH}', '', d)} \
     file://0002-appshell-cmake-bump-min-version-to-3.5.patch \
     file://0003-appshell-cmake-drop-deprecated-use-of-target_link_li.patch \
@@ -15,10 +19,10 @@ SRC_URI = " \
 "
 ISP_SYSTEMD_PATCH = "file://0001-isp-imx-start_isp-don-t-report-error-if-no-camera-is.patch"
 
-IMX_SRCREV_ABBREV = "3cac1fb"
+IMX_SRCREV_ABBREV = "d9be886"
 S = "${UNPACKDIR}/${BP}-${IMX_SRCREV_ABBREV}"
 
-SRC_URI[sha256sum] = "8fa5094da6438505287f4dcc8033dad3057ab81bf98c858884f7c3a2e521b252"
+SRC_URI[sha256sum] = "b6e59b670a88a93295b3761cd785d87453bf7bb79a7ce2ea7f140579c888eac2"
 
 inherit fsl-eula-unpack cmake pkgconfig systemd use-imx-headers
 
@@ -63,6 +67,16 @@ do_configure_disable:prepend () {
     # FIXME: Should be rebuild.
     patchelf --replace-needed libtinyxml2.so.10 libtinyxml2.so.11 ${S}/appshell/shell_libs/ispcore/ARM64/libcam_device.so
 }
+
+copy_eula_to_source() {
+  if [ -f "${UNPACKDIR}/EULA" ]; then
+    cp "${UNPACKDIR}/EULA" "${S}/EULA"
+  else
+    bberror "Could not find EULA file in ${UNPACKDIR} to copy!"
+  fi
+}
+
+do_unpack[posfuncs] += "copy_eula_to_source"
 
 do_install() {
     # The Makefile unconditionally installs tuningext even if it is not built
